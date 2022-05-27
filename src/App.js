@@ -53,13 +53,18 @@ function MyApp() {
 
         <Box sx={{
                   display: 'flex',
+                  position: 'relative',
                   width: '100%',
-                  height: '100vh',
+                  height: '100%',
                   alignItems: 'center',
                   justifyContent: 'center',
+                  margin: 0,
+                  padding: 0,
         }}>
 
+
         <Main/>
+        
 
         <Box sx={{
               position: 'absolute',
@@ -98,12 +103,15 @@ export default function ToggleColorMode() {
       createTheme({
         palette: {
           primary: {
-            main: '#00d400',
+            main: '#a000f4',
           },
           secondary: {
             main: '#ff2f00',
           },
           mode,
+        },
+        typography: {
+          fontFamily: ['Ubuntu']
         },
       }),
     [mode],
