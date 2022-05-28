@@ -24,6 +24,23 @@ import EggIcon from '@mui/icons-material/Egg';
 import Units from 'ethereumjs-units'
 import { createAvatar } from '@dicebear/avatars';
 import * as style from '@dicebear/avatars-bottts-sprites';
+import FingerprintIcon from '@mui/icons-material/Fingerprint';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+import { styled } from '@mui/material/styles';
+import IconButton from '@mui/material/IconButton';
+
+const ExpandMore = styled((props) => {
+    const { expand, ...other } = props;
+    return <IconButton {...other} />;
+  })(({ theme, expand }) => ({
+    transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
+    marginLeft: 'auto',
+    transition: theme.transitions.create('transform', {
+      duration: theme.transitions.duration.shortest,
+    }),
+  }));
 
 class Main extends React.Component {
     constructor(props){
@@ -45,6 +62,7 @@ class Main extends React.Component {
         balance: 0,
         transIn: 0,
         transOut: 0,
+        expanded: false,
       }
     }
 
@@ -88,6 +106,7 @@ class Main extends React.Component {
             var from = metadata.from;
             var to = metadata.to;
             var amount = metadata.amount;
+            var tags = tags;
             if (attachments) var address = attachments[0].address;
             notes.push({
                 title: title,
@@ -97,12 +116,15 @@ class Main extends React.Component {
                 from: from, 
                 to: to,
                 amount: amount,
+                tags: tags,
             });
         }
         this.setState({notes: notes});
         console.log(notes);
+        console.log(tags);
         this.parseRSS3Domains(notes);
         this.parseRSS3Transactions(notes);
+        //this.parseRSS3NFTs(notes);
     }
 
     parseRSS3Domains(notes) {
@@ -112,20 +134,21 @@ class Main extends React.Component {
             var note = notes[i];
             var title = note.title;
             var token_symbol = note.token_symbol;
+            var from = note.from;
             var address = note.address;
             if(title) {
             other_addresses.push(
                 <div className="note">
                     <div className="title">
                         <Box display="flex" alignItems="center">
-                            <Box mr={1} padding={1} sx={{
+                            <Box padding={1} sx={{
                                 width: '100%',
                                 alignItems: 'center',
                             }}>
-                                <EggIcon />
-                                <br/>
+                                <FingerprintIcon />
+                                <div style={{fontWeight:"bold"}}>
                                 {title}
-                                <br/>
+                                </div>
                                 ({token_symbol})
                             </Box>
                         </Box>
@@ -154,15 +177,14 @@ class Main extends React.Component {
                 <div className="note">
                     <div className="title">
                         <Box display="flex" alignItems="center">
-                            <Box mr={1} padding={1} sx={{
+                            <Box padding={1} sx={{
                                 width: '100%',
                                 alignItems: 'center',
                             }}>
                                 <DiamondIcon />
-                                <br/>
-                                &nbsp;
+                                <div style={{fontWeight:"bold"}}>
                                 {Units.convert(amount, 'wei', 'eth')} {token_symbol}
-                                <br/>
+                                </div>
                                 from &nbsp;
                                 {from} 
                                 <br/>
@@ -181,6 +203,22 @@ class Main extends React.Component {
             }
         }
         this.setState({transactions: transactions});
+    }
+
+    // given a list of transactions, find the total amount of sent and received
+    calculateTransactions(transactions) {
+        var transIn = 0;
+        var transOut = 0;
+        for (var i = 0; i < transactions.length; i++) {
+            var transaction = transactions[i];
+            var amount = transaction.amount;
+            if (amount > 0) {
+                transIn += amount;
+            } else {
+                transOut += amount;
+            }
+        }
+        this.setState({transIn: transIn, transOut: transOut});
     }
     
     handleClick() {
@@ -243,8 +281,6 @@ class Main extends React.Component {
                   </LoadingButton>
                   </Container>
       
-                  <br/>
-      
                 </Box>
                 </form>
 
@@ -269,15 +305,21 @@ class Main extends React.Component {
                     padding: 3,
                     margin: 3
                 }}>
-                    <Typography color="primary" variant="h5">
-                        Domains
+                    <Typography color="primary" variant="h5" sx={{
+                        fontWeight: 'bold'
+                    }}>
+                        NFTs
                     </Typography>
+                    <br/>
+
+
                     {(this.state.other_addresses.length > 0)
                     ? this.state.other_addresses
                     : 
-                    <Typography>None found!
+                    <Typography>None!
                     </Typography>
                     }
+
                 </Card>
 
 
@@ -285,18 +327,32 @@ class Main extends React.Component {
                     padding: 3,
                     margin: 3
                 }}>
-                    <Typography color="primary" variant="h5">
+                    <Typography color="primary" variant="h5" sx={{
+                        fontWeight: 'bold'
+                    }}>
                         Transactions
                     </Typography>
+                    <br/>
                     {(this.state.transactions.length > 0)
                     ? this.state.transactions
                     : 
-                    <Typography>None found!
+                    <Typography>None!
                     </Typography>
                     }
                 </Card>
 
 
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
                 <br/>
                 <br/>
                 <br/>

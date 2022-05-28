@@ -22,6 +22,7 @@ import LightModeIcon from '@mui/icons-material/LightMode';
 import Container from '@mui/material/Container';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import GitHubIcon from '@mui/icons-material/GitHub';
+import Collapse from '@mui/material/Collapse';
 
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
@@ -103,7 +104,7 @@ export default function ToggleColorMode() {
       createTheme({
         palette: {
           primary: {
-            main: '#00946e',
+            main: '#00bf00',
           },
           secondary: {
             main: '#ff2f00',
