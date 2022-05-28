@@ -103,7 +103,7 @@ export default function ToggleColorMode() {
       createTheme({
         palette: {
           primary: {
-            main: '#a000f4',
+            main: '#00946e',
           },
           secondary: {
             main: '#ff2f00',

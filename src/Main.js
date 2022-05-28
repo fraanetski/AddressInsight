@@ -21,6 +21,9 @@ import Typography from '@mui/material/Typography';
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import DiamondIcon from '@mui/icons-material/Diamond';
 import EggIcon from '@mui/icons-material/Egg';
+import Units from 'ethereumjs-units'
+import { createAvatar } from '@dicebear/avatars';
+import * as style from '@dicebear/avatars-bottts-sprites';
 
 class Main extends React.Component {
     constructor(props){
@@ -30,7 +33,7 @@ class Main extends React.Component {
       this.handleSubmit = this.handleSubmit.bind(this);
       this.getRSS3 = this.getRSS3.bind(this);
       this.parseRSS3 = this.parseRSS3.bind(this);
-      this.parseRSS3Addresses = this.parseRSS3Addresses.bind(this);
+      this.parseRSS3Domains = this.parseRSS3Domains.bind(this);
       this.parseRSS3Transactions = this.parseRSS3Transactions.bind(this);
       this.state = {
         loading: false,
@@ -39,6 +42,9 @@ class Main extends React.Component {
         notes: [],
         other_addresses: [],
         transactions: [],
+        balance: 0,
+        transIn: 0,
+        transOut: 0,
       }
     }
 
@@ -75,23 +81,31 @@ class Main extends React.Component {
         for (var i = 0; i < list.length; i++) {
             var note = list[i];
             var title = note.title;
+            var date = note.date_created;
             var attachments = note.attachments;
             var metadata = note.metadata;
             var token_symbol = metadata.token_symbol;
-            if (attachments) var address = attachments.address;
+            var from = metadata.from;
+            var to = metadata.to;
+            var amount = metadata.amount;
+            if (attachments) var address = attachments[0].address;
             notes.push({
                 title: title,
                 token_symbol: token_symbol,
-                address: address
+                date: date,
+                address: address,
+                from: from, 
+                to: to,
+                amount: amount,
             });
         }
         this.setState({notes: notes});
         console.log(notes);
-        this.parseRSS3Addresses(notes);
+        this.parseRSS3Domains(notes);
         this.parseRSS3Transactions(notes);
     }
 
-    parseRSS3Addresses(notes) {
+    parseRSS3Domains(notes) {
         var notes = notes;
         var other_addresses = [];
         for (var i = 0; i < notes.length; i++) {
@@ -104,12 +118,14 @@ class Main extends React.Component {
                 <div className="note">
                     <div className="title">
                         <Box display="flex" alignItems="center">
-                            <Box mr={1}>
+                            <Box mr={1} padding={1} sx={{
+                                width: '100%',
+                                alignItems: 'center',
+                            }}>
                                 <EggIcon />
-                            </Box>
-                            <Box>
+                                <br/>
                                 {title}
-                                &nbsp;
+                                <br/>
                                 ({token_symbol})
                             </Box>
                         </Box>
@@ -129,22 +145,34 @@ class Main extends React.Component {
             var title = note.title;
             var token_symbol = note.token_symbol;
             var address = note.address;
+            var date = note.date;
+            var from = note.from;
+            var to = note.to;
+            var amount = note.amount;
             if(title == undefined) {
             transactions.push(
                 <div className="note">
                     <div className="title">
                         <Box display="flex" alignItems="center">
-                            <Box mr={1}>
-                                <EggIcon />
-                            </Box>
-                            <Box>
-                                {token_symbol}:
+                            <Box mr={1} padding={1} sx={{
+                                width: '100%',
+                                alignItems: 'center',
+                            }}>
+                                <DiamondIcon />
+                                <br/>
                                 &nbsp;
-                                address1 
+                                {Units.convert(amount, 'wei', 'eth')} {token_symbol}
+                                <br/>
+                                from &nbsp;
+                                {from} 
+                                <br/>
+                                to
                                 &nbsp;
-                                -
-                                &nbsp;
-                                address2
+                                {to}
+                                <br/>
+                                on
+                                <br/>
+                                {date}
                             </Box>
                         </Box>
                     </div>
@@ -171,8 +199,10 @@ class Main extends React.Component {
     
     render() {
 
-
         if (this.state.dataReceived) {
+
+            const avatar = `https://avatars.dicebear.com/api/bottts/${this.state.value}.svg`;
+
             return (
 
                 <div className="App">
@@ -217,6 +247,23 @@ class Main extends React.Component {
       
                 </Box>
                 </form>
+
+                <Card sx={{
+                    padding: 3,
+                    margin: 3
+                }}>
+                    <img src={avatar} height='70' />
+                    <br/>
+                    <br/>
+                    {this.state.value}
+                    <br/>
+                    <br/>
+                    Balance: {Units.convert(this.state.balance, 'wei', 'eth')} ETH
+                    <br/>
+                    In: {this.state.transIn}
+                    &nbsp;
+                    Out: {this.state.transOut}
+                </Card>
 
                 <Card sx={{
                     padding: 3,
