@@ -55,9 +55,10 @@ class Main extends React.Component {
       this.getKNN3Social = this.getKNN3Social.bind(this);
       this.parseRSS3 = this.parseRSS3.bind(this);
       this.parseKNN3 = this.parseKNN3.bind(this);
-      this.parseRSS3Domains = this.parseRSS3Domains.bind(this);
+      this.parseRSS3NFTs = this.parseRSS3NFTs.bind(this);
       this.parseRSS3Transactions = this.parseRSS3Transactions.bind(this);
       this.parseKNN3Social = this.parseKNN3Social.bind(this);
+      this.analyze = this.analyze.bind(this);
       this.state = {
         loading: false,
         value: '',
@@ -66,12 +67,15 @@ class Main extends React.Component {
         other_addresses: [],
         transactions: [],
         balance: 0,
-        transIn: 0,
-        transOut: 0,
         expanded: false,
         eventNames: [],
         socialNames: [],
-        trustScore: 0,
+        transIn: 0,
+        transOut: 0,
+        transTotal: 0,
+        nfts: 0,
+        events: 0,
+        friends: 0,
       }
     }
 
@@ -123,14 +127,14 @@ class Main extends React.Component {
         }
         this.setState({notes: notes});
         console.log(notes);
-        this.parseRSS3Domains(notes);
+        this.parseRSS3NFTs(notes);
         this.parseRSS3Transactions(notes);
-        //this.parseRSS3NFTs(notes);
     }
 
-    parseRSS3Domains(notes) {
+    parseRSS3NFTs(notes) {
         var notes = notes;
         var other_addresses = [];
+        var nftCount = 0;
         for (var i = 0; i < notes.length; i++) {
             var note = notes[i];
             var title = note.title;
@@ -140,6 +144,7 @@ class Main extends React.Component {
             var tag_list = note.tags;
             if(title) {
                 if(tag_list.length < 2){
+                    nftCount++;
                     other_addresses.push(
                         <div className="note">
                             <div className="title">
@@ -161,51 +166,90 @@ class Main extends React.Component {
                 }
             }
         }
+        this.setState({nfts: nftCount});
         this.setState({other_addresses: other_addresses});
     }
 
     parseRSS3Transactions(notes) {
         var notes = notes;
+        var address = this.state.value;
+        var ins = [];
+        var out = [];
         var transactions = [];
         for (var i = 0; i < notes.length; i++) {
             var note = notes[i];
             var title = note.title;
             var token_symbol = note.token_symbol;
-            var address = note.address;
+            var url = note.address;
             var date = note.date;
             var from = note.from;
             var to = note.to;
             var amount = note.amount;
-            if(title == undefined) {
-            transactions.push(
-                <div className="note">
-                    <div className="title">
-                        <Box display="flex" alignItems="center">
-                            <Box padding={1} sx={{
-                                width: '100%',
-                                alignItems: 'center',
-                            }}>
-                                <DiamondIcon />
-                                <div style={{fontWeight:"bold"}}>
-                                {Units.convert(amount, 'wei', 'eth')} {token_symbol}
-                                </div>
-                                from &nbsp;
-                                {from} 
-                                <br/>
-                                to
-                                &nbsp;
-                                {to}
-                                <br/>
-                                on
-                                <br/>
-                                {date}
-                            </Box>
-                        </Box>
-                    </div>
-                </div>
-            );
+            if (title == undefined) {
+                if (from.toUpperCase() == address.toUpperCase()) {
+                    out++;
+
+                    transactions.push(
+                        <div className="note">
+                            <div className="title">
+                                <Box display="flex" alignItems="center">
+                                    <Box padding={1} sx={{
+                                        width: '100%',
+                                        alignItems: 'center',
+                                    }}>
+                                        <DiamondIcon />
+                                        <div style={{fontWeight:"bold"}}>
+                                        {Units.convert(amount, 'wei', 'eth')} {token_symbol}
+                                        </div>
+                                        from &nbsp;
+                                        {from} 
+                                        <br/>
+                                        to
+                                        &nbsp;
+                                        {to}
+                                        <br/>
+                                        on
+                                        <br/>
+                                        {date}
+                                    </Box>
+                                </Box>
+                            </div>
+                        </div>
+                    );
+                } else {
+                    ins++;
+
+                    transactions.push(
+                        <div className="note">
+                            <div className="title">
+                                <Box display="flex" alignItems="center">
+                                    <Box padding={1} sx={{
+                                        width: '100%',
+                                        alignItems: 'center',
+                                    }}>
+                                        <DiamondIcon />
+                                        <div style={{fontWeight:"bold"}}>
+                                        {Units.convert(amount, 'wei', 'eth')} {token_symbol}
+                                        </div>
+                                        from &nbsp;
+                                        {from} 
+                                        <br/>
+                                        to
+                                        &nbsp;
+                                        {to}
+                                        <br/>
+                                        on
+                                        <br/>
+                                        {date}
+                                    </Box>
+                                </Box>
+                            </div>
+                        </div>
+                    );
+                }
             }
         }
+        this.setState({transIn: ins, transOut: out, transTotal: ins + out});
         this.setState({transactions: transactions});
     }
 
@@ -278,6 +322,7 @@ class Main extends React.Component {
     parseKNN3(events) {
         var events = events;
         var eventNames = [];
+        this.setState({events: events.length});
         for (var i = 0; i < events.length; i++) {
             eventNames.push(
                 <div>
@@ -302,6 +347,7 @@ class Main extends React.Component {
     parseKNN3Social(social) {
         var social = social;
         var socialNames = [];
+        this.setState({friends: social.length});
         for (var i = 0; i < social.length; i++) {
             socialNames.push(
                 <div>
@@ -323,19 +369,11 @@ class Main extends React.Component {
         this.setState({socialNames: socialNames});
     }
 
-    calculateTransactions(transactions) {
-        var transIn = 0;
-        var transOut = 0;
-        for (var i = 0; i < transactions.length; i++) {
-            var transaction = transactions[i];
-            var amount = transaction.amount;
-            if (amount > 0) {
-                transIn += amount;
-            } else {
-                transOut += amount;
-            }
-        }
-        this.setState({transIn: transIn, transOut: transOut});
+    async analyze() {
+        // use the variables to calculate a trust score for this address
+        // then see what badges they qualify for
+        // call the function that will create something to render for this, or do it in render()
+        
     }
     
     handleClick() {
@@ -351,6 +389,7 @@ class Main extends React.Component {
       this.getRSS3();
       this.getKNN3();
       this.getKNN3Social();
+      this.analyze();
       event.preventDefault();
     }
     
