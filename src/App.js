@@ -1,4 +1,5 @@
 import * as React from 'react';
+import {Link} from 'react-router-dom'
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -12,6 +13,7 @@ import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import './App.css';
+import Logo from './addrlogo1.png';
 import Style from './Style';
 import Main  from './Main';
 import IconButton from '@mui/material/IconButton';
@@ -23,7 +25,8 @@ import Container from '@mui/material/Container';
 import TwitterIcon from '@mui/icons-material/Twitter';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import Collapse from '@mui/material/Collapse';
-
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import FingerprintIcon from '@mui/icons-material/Fingerprint';
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -39,18 +42,37 @@ function MyApp() {
         borderRadius: 0,
       }}
     >
-      <Container maxWidth='lg'>
+      <Container maxWidth='md'>
         <Box sx={{
-          display: 'block',
-          marginLeft: 'auto',
-          marginRight: 0
+            display: 'flex',
         }}>
           <IconButton sx={{ 
-            ml: 1,
+            marginLeft: 0,
+            marginRight: 'auto',
+            ml: 5,
             }} onClick={colorMode.toggleColorMode} color="inherit">
             {theme.palette.mode === 'dark' ? <LightModeIcon /> : <NightlightRoundIcon />}
           </IconButton>
-        </Box>
+
+          <Box sx={{
+            alignItems: 'center',
+            marginRight: '37.5%',
+          }}>
+            <br/>
+            <a href="/" style={{all: 'unset'}}>
+            <img src={Logo} height='50'/>
+            </a>
+          </Box>
+
+          <IconButton sx={{
+            marginRight: 'auto',
+            marginLeft: 0,
+            mr: 5,
+          }}>
+            <AccountBalanceWalletIcon />
+          </IconButton>
+          </Box>
+
 
         <Box sx={{
                   display: 'flex',
@@ -79,6 +101,7 @@ function MyApp() {
                 <GitHubIcon />
             </a>
         </Box>
+          <br/>
 
       </Box>
       </Container>
@@ -104,7 +127,7 @@ export default function ToggleColorMode() {
       createTheme({
         palette: {
           primary: {
-            main: '#00bf00',
+            main: '#aa3eff',
           },
           secondary: {
             main: '#ff2f00',

@@ -30,6 +30,8 @@ import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import SocialDistanceIcon from '@mui/icons-material/SocialDistance';
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -49,9 +51,13 @@ class Main extends React.Component {
       this.handleChange = this.handleChange.bind(this);
       this.handleSubmit = this.handleSubmit.bind(this);
       this.getRSS3 = this.getRSS3.bind(this);
+      this.getKNN3 = this.getKNN3.bind(this);
+      this.getKNN3Social = this.getKNN3Social.bind(this);
       this.parseRSS3 = this.parseRSS3.bind(this);
+      this.parseKNN3 = this.parseKNN3.bind(this);
       this.parseRSS3Domains = this.parseRSS3Domains.bind(this);
       this.parseRSS3Transactions = this.parseRSS3Transactions.bind(this);
+      this.parseKNN3Social = this.parseKNN3Social.bind(this);
       this.state = {
         loading: false,
         value: '',
@@ -63,6 +69,9 @@ class Main extends React.Component {
         transIn: 0,
         transOut: 0,
         expanded: false,
+        eventNames: [],
+        socialNames: [],
+        trustScore: 0,
       }
     }
 
@@ -77,25 +86,10 @@ class Main extends React.Component {
         })
     }
 
-    // json schema: 
-    // {
-    //     list: [
-    //         {
-    //             title: "Name",
-    //             attachments: [
-    //                 {
-    //                     address: "image address"
-    //                 }
-    //             ],
-    //             metadata: {
-    //                 token_symbol: "ETH"
-    //             }
-    //         }
-    //     ]
-    // }
     parseRSS3(data) {
         var list = data.list;
         var notes = [];
+        var tags = [];
         for (var i = 0; i < list.length; i++) {
             var note = list[i];
             var title = note.title;
@@ -106,7 +100,15 @@ class Main extends React.Component {
             var from = metadata.from;
             var to = metadata.to;
             var amount = metadata.amount;
-            var tags = tags;
+            // parse the tags
+            if (tags != undefined) {
+                var tags = note.tags;
+                var tag_list = [];
+                for (var j = 0; j < tags.length; j++) {
+                    var tag = tags[j];
+                    tag_list.push(tag.name);
+                }
+            }
             if (attachments) var address = attachments[0].address;
             notes.push({
                 title: title,
@@ -121,7 +123,6 @@ class Main extends React.Component {
         }
         this.setState({notes: notes});
         console.log(notes);
-        console.log(tags);
         this.parseRSS3Domains(notes);
         this.parseRSS3Transactions(notes);
         //this.parseRSS3NFTs(notes);
@@ -136,25 +137,28 @@ class Main extends React.Component {
             var token_symbol = note.token_symbol;
             var from = note.from;
             var address = note.address;
+            var tag_list = note.tags;
             if(title) {
-            other_addresses.push(
-                <div className="note">
-                    <div className="title">
-                        <Box display="flex" alignItems="center">
-                            <Box padding={1} sx={{
-                                width: '100%',
-                                alignItems: 'center',
-                            }}>
-                                <FingerprintIcon />
-                                <div style={{fontWeight:"bold"}}>
-                                {title}
-                                </div>
-                                ({token_symbol})
-                            </Box>
-                        </Box>
-                    </div>
-                </div>
-            );
+                if(tag_list.length < 2){
+                    other_addresses.push(
+                        <div className="note">
+                            <div className="title">
+                                <Box display="flex" alignItems="center">
+                                    <Box padding={1} sx={{
+                                        width: '100%',
+                                        alignItems: 'center',
+                                    }}>
+                                        <FingerprintIcon />
+                                        <div style={{fontWeight:"bold"}}>
+                                        {title}
+                                        </div>
+                                        ({token_symbol})
+                                    </Box>
+                                </Box>
+                            </div>
+                        </div>
+                    );
+                }
             }
         }
         this.setState({other_addresses: other_addresses});
@@ -205,7 +209,120 @@ class Main extends React.Component {
         this.setState({transactions: transactions});
     }
 
-    // given a list of transactions, find the total amount of sent and received
+    async getKNN3() {
+        const data = JSON.stringify({
+            query: `query POAPEventsQuery($addressVar: String){
+                addrs(where: { address: $addressVar }) {
+                    attendEvents {
+                        id
+                        name
+                    }
+                }
+            }`,
+            variables: `{
+                "addressVar": "${this.state.value}"
+            }`,
+        });
+
+        const response = await fetch(
+            'https://mw.graphql.knn3.xyz/',
+            {
+                method: 'post',
+                body: data,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Content-Length': data.length,
+                },
+            }
+        );
+
+        const json = await response.json();
+        console.log(json);
+        var events = json.data.addrs[0].attendEvents;
+        this.parseKNN3(events);
+    }
+
+    async getKNN3Social() {
+        const data = JSON.stringify({
+            query: `query SocialQuery($addressVar: String){
+              addrs(where: { address: $addressVar }) {
+                address
+                addrsFollow {
+                  addressmaterial iconsma
+                }
+              }
+            }`,
+            variables: `{
+                "addressVar": "${this.state.value}"
+            }`,
+        });
+
+        const response = await fetch(
+            'https://mw.graphql.knn3.xyz/',
+            {
+                method: 'post',
+                body: data,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Content-Length': data.length,
+                },
+            }
+        );
+
+        const json = await response.json();
+        var social = json.data.addrs[0].addrsFollow;
+        console.log(social);
+        this.parseKNN3Social(social);
+    }
+
+    parseKNN3(events) {
+        var events = events;
+        var eventNames = [];
+        for (var i = 0; i < events.length; i++) {
+            eventNames.push(
+                <div>
+                    <Box display="flex" alignItems="center">
+                        <Box padding={1} sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                        }}>
+                            <EmojiEventsIcon />
+                            <div style={{fontWeight:"bold"}}>
+                            {events[i].name}
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
+            );
+        }
+
+        this.setState({eventNames: eventNames});
+    }
+
+    parseKNN3Social(social) {
+        var social = social;
+        var socialNames = [];
+        for (var i = 0; i < social.length; i++) {
+            socialNames.push(
+                <div>
+                    <Box display="flex" alignItems="center">
+                        <Box padding={1} sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                        }}>
+                            <SocialDistanceIcon />
+                            <div style={{fontWeight:"bold"}}>
+                            {social[i].address}
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
+            );
+        }
+
+        this.setState({socialNames: socialNames});
+    }
+
     calculateTransactions(transactions) {
         var transIn = 0;
         var transOut = 0;
@@ -232,6 +349,8 @@ class Main extends React.Component {
     handleSubmit(event) {
       // alert('An address was submitted: ' + this.state.value);
       this.getRSS3();
+      this.getKNN3();
+      this.getKNN3Social();
       event.preventDefault();
     }
     
@@ -256,6 +375,7 @@ class Main extends React.Component {
                   }}
                 >
                     <Container maxWidth='lg'>
+                        <br/>
                         <br/>
                   <TextField fullWidth label="Enter an address" id="fullWidth" 
                   value={this.state.value}
@@ -294,12 +414,46 @@ class Main extends React.Component {
                     {this.state.value}
                     <br/>
                     <br/>
-                    Balance: {Units.convert(this.state.balance, 'wei', 'eth')} ETH
+                    {/* Balance: {Units.convert(this.state.balance, 'wei', 'eth')} ETH
                     <br/>
                     In: {this.state.transIn}
                     &nbsp;
-                    Out: {this.state.transOut}
+                    Out: {this.state.transOut} */}
                 </Card>
+
+                <Card sx={{
+                    padding: 3,
+                    margin: 3
+                }}>
+                    <Typography color="primary" variant="h5" sx={{
+                        fontWeight: 'bold'
+                    }}>
+                        Account Analysis
+                    </Typography>
+                    <br/>
+
+
+                </Card>
+
+                <Card sx={{
+                    padding: 3,
+                    margin: 3
+                }}>
+                    <Typography color="primary" variant="h5" sx={{
+                        fontWeight: 'bold'
+                    }}>
+                        Social Connections
+                    </Typography>
+                    <br/>
+
+                    {(this.state.socialNames.length > 0)
+                    ? this.state.socialNames
+                    : 
+                    <Typography>None!
+                    </Typography>
+                    }
+                </Card>
+
 
                 <Card sx={{
                     padding: 3,
@@ -312,7 +466,6 @@ class Main extends React.Component {
                     </Typography>
                     <br/>
 
-
                     {(this.state.other_addresses.length > 0)
                     ? this.state.other_addresses
                     : 
@@ -320,6 +473,26 @@ class Main extends React.Component {
                     </Typography>
                     }
 
+                </Card>
+
+
+                <Card sx={{
+                    padding: 3,
+                    margin: 3
+                }}>
+                    <Typography color="primary" variant="h5" sx={{
+                        fontWeight: 'bold'
+                    }}>
+                        Events
+                    </Typography>
+                    <br/>
+
+                    {(this.state.eventNames.length > 0)
+                    ? this.state.eventNames
+                    : 
+                    <Typography>None!
+                    </Typography>
+                    }
                 </Card>
 
 
@@ -341,8 +514,6 @@ class Main extends React.Component {
                     }
                 </Card>
 
-
-                <br/>
                 <br/>
                 <br/>
                 <br/>
@@ -367,7 +538,7 @@ class Main extends React.Component {
             sx={{
                 display: 'flex',
                 width: '100%',
-                height: '95.5vh',
+                height: '92vh',
                 position: 'relative',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -398,9 +569,6 @@ class Main extends React.Component {
                 <ArrowRightIcon />
             </LoadingButton>
             </Container>
-
-            <br/>
-
           </Box>
           </form>
 
