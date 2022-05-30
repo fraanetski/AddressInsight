@@ -2,19 +2,8 @@ import * as React from 'react';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import LoadingButton from '@mui/lab/LoadingButton';
-import SaveIcon from '@mui/icons-material/Save';
-import Stack from '@mui/material/Stack';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import Card from '@mui/material/Card';
-import SendIcon from '@mui/icons-material/Send';
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
 import './App.css';
-import Style from './Style';
-import { MailRounded } from '@mui/icons-material';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
@@ -22,12 +11,7 @@ import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import DiamondIcon from '@mui/icons-material/Diamond';
 import EggIcon from '@mui/icons-material/Egg';
 import Units from 'ethereumjs-units'
-import { createAvatar } from '@dicebear/avatars';
-import * as style from '@dicebear/avatars-bottts-sprites';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
 import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
@@ -68,6 +52,7 @@ class Main extends React.Component {
       this.setEventCount = this.setEventCount.bind(this);
       this.setNFTCount = this.setNFTCount.bind(this);
       this.setFriendCount = this.setFriendCount.bind(this);
+      this.updatePage = this.updatePage.bind(this);
       this.state = {
         loading: false,
         value: '',
@@ -87,18 +72,31 @@ class Main extends React.Component {
         friends: 0,
         badges: [],
         trustVal: [],
+        flag: false,
       }
     }
 
     async getRSS3() {
         var address = this.state.value;
-        return fetch(`https://pregod.rss3.dev/v0.4.0/account:${address}@ethereum/notes?`)
+        const endpoint = 'https://pregod.rss3.dev/v0.4.0/account:' + this.state.value + '@ethereum/notes?';
+        await fetch(endpoint, {
+            method: 'GET',
+        })
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            this.setState({loading: false, dataReceived: true});
-            this.parseRSS3(data);
+            if (data.total == 0){
+                console.log("caught it");
+                this.getRSS3();
+            } else {
+                this.parseRSS3(data);
+                this.analyze();
+            }
         })
+        .catch(error => {
+            console.log(error);
+        });
+
     }
 
     parseRSS3(data) {
@@ -388,11 +386,15 @@ class Main extends React.Component {
         var friendCount = this.state.friends;
         var trustScore = 0;
         var trustVal = [];
+        
+        if (transOut.constructor == Array) transOut = transOut.length;
 
-        trustScore = transOut + nftCount + eventCount + 2 * friendCount;
+        trustScore = transOut + nftCount + eventCount + (2*friendCount);
         trustScore = trustScore / 5;
 
-        if (trustScore <= 1) {
+        console.log(trustScore);
+
+        if (trustScore <= 1 && trustScore >= 0) {
             trustVal.push(
                 <div>
                     <Box display="flex" alignItems="center">
@@ -405,14 +407,14 @@ class Main extends React.Component {
                             }}>
                                 Trust Score:
                             </Typography>
-                            <Typography style={{fontWeight:"bold", color: "red"}}>
+                            <Typography variant="h6" style={{fontWeight:"bold", color: "red"}}>
                             Very Low
                             </Typography>
                         </Box>
                     </Box>
                 </div>
             );
-        } else if (trustScore <= 2) {
+        } else if (trustScore <= 2 && trustScore > 1) {
             trustVal.push(
                 <div>
                     <Box display="flex" alignItems="center">
@@ -425,14 +427,14 @@ class Main extends React.Component {
                             }}>
                                 Trust Score:
                             </Typography> 
-                            <Typography style={{fontWeight:"bold", color: "orange"}}>
+                            <Typography variant="h6" style={{fontWeight:"bold", color: "orange"}}>
                             Low
                             </Typography>
                         </Box>
                     </Box>
                 </div>
             );
-        } else if (trustScore <= 4) {
+        } else if (trustScore <= 4 && trustScore > 2) {
             trustVal.push(
                 <div>
                     <Box display="flex" alignItems="center">
@@ -445,7 +447,7 @@ class Main extends React.Component {
                             }}>
                                 Trust Score:
                             </Typography>
-                            <Typography style={{fontWeight:"bold", color:"yellow"}}>
+                            <Typography variant="h6" style={{fontWeight:"bold", color:"yellow"}}>
                             Medium
                             </Typography>
                         </Box>
@@ -453,6 +455,48 @@ class Main extends React.Component {
                 </div>
             );
         } else if (trustScore > 4) {
+            if (nftCount == 0 && eventCount == 0 && friendCount == 0) {
+                trustVal.push(
+                    <div>
+                    <Box display="flex" alignItems="center">
+                        <Box padding={1} sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                        }}>
+                            <Typography variant="h6" sx={{
+                                fontWeight: 'bold'
+                            }}>
+                                Trust Score:
+                            </Typography>
+                            <Typography variant="h6" style={{fontWeight:"bold", color:"yellow"}}>
+                            Medium
+                            </Typography>
+                        </Box>
+                    </Box>
+                </div>
+                )
+            } else {
+                trustVal.push(
+                    <div>
+                        <Box display="flex" alignItems="center">
+                            <Box padding={1} sx={{
+                                width: '100%',
+                                alignItems: 'center',
+                            }}>
+                                <Typography variant="h6" sx={{
+                                    fontWeight: 'bold'
+                                }}>
+                                    Trust Score:
+                                </Typography>
+                                <Typography variant="h6" style={{fontWeight:"bold", color:"green"}}>
+                                High
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </div>
+                );
+            }
+        } else if (trustScore == undefined) {
             trustVal.push(
                 <div>
                     <Box display="flex" alignItems="center">
@@ -465,8 +509,8 @@ class Main extends React.Component {
                             }}>
                                 Trust Score:
                             </Typography>
-                            <Typography style={{fontWeight:"bold", color:"green"}}>
-                            High
+                            <Typography variant="h6" style={{fontWeight:"bold", color:"red"}}>
+                                Loading...
                             </Typography>
                         </Box>
                     </Box>
@@ -600,15 +644,31 @@ class Main extends React.Component {
     
     handleSubmit(event) {
       // alert('An address was submitted: ' + this.state.value);
+      console.log('hello');
       if (this.state.value.length == 42) {
         event.preventDefault();
         this.getRSS3();
+        this.getRSS3();
         this.getKNN3();
         this.getKNN3Social();
+        this.analyze();
+        this.updatePage();
+        var RSSInterval = setInterval(this.getRSS3, 1000);
+        var analyzeInterval = setInterval(this.analyze, 1000);
+        setTimeout(() => {
+            clearInterval(RSSInterval);
+            clearInterval(analyzeInterval);
+        }, 10000);
       } else {
         this.setState({loading: false});
         alert('Please enter a valid address');
       }
+    }
+
+    updatePage(){
+        setTimeout(() => {
+            this.setState({loading: false, dataReceived: true});
+        }, 1000);
     }
     
     render() {
@@ -689,6 +749,11 @@ class Main extends React.Component {
                     <br/>
                     {this.state.trustVal}
                     <br/>
+                    <Typography variant="h6" sx={{
+                                fontWeight: 'bold'
+                            }}>
+                                Badges:
+                    </Typography>
                     {this.state.badges}
 
                 </Card>

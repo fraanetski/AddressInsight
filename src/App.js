@@ -27,6 +27,8 @@ import GitHubIcon from '@mui/icons-material/GitHub';
 import Collapse from '@mui/material/Collapse';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
+import RSS3 from './rss3.png';
+
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
 
@@ -90,7 +92,7 @@ function MyApp() {
         
 
         <Box sx={{
-              position: 'absolute',
+            position: 'absolute',
             bottom: 0,
           }}>
             <a target="_blank" href="https://twitter.com/whateverthisiscalled" style={{all: "unset"}}>
@@ -100,6 +102,7 @@ function MyApp() {
             <a target="_blank" href="https://github.com/fraanetski/ethshanghai" style={{all: "unset"}}>
                 <GitHubIcon />
             </a>
+            <br/>
         </Box>
           <br/>
 
