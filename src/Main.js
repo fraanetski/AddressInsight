@@ -32,6 +32,11 @@ import { styled } from '@mui/material/styles';
 import IconButton from '@mui/material/IconButton';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import SocialDistanceIcon from '@mui/icons-material/SocialDistance';
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import MuseumIcon from '@mui/icons-material/Museum';
+import FestivalIcon from '@mui/icons-material/Festival';
+import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 
 const ExpandMore = styled((props) => {
     const { expand, ...other } = props;
@@ -80,6 +85,8 @@ class Main extends React.Component {
         nfts: 0,
         events: 0,
         friends: 0,
+        badges: [],
+        trustVal: [],
       }
     }
 
@@ -274,7 +281,7 @@ class Main extends React.Component {
         );
 
         const json = await response.json();
-        if (json.data) {
+        if (json.data.addrs[0]) {
             var events = json.data.addrs[0].attendEvents;
         } else {
             var events = [];
@@ -328,6 +335,7 @@ class Main extends React.Component {
                     <Box display="flex" alignItems="center">
                         <Box padding={1} sx={{
                             width: '100%',
+                            minWidth: '10',
                             alignItems: 'center',
                         }}>
                             <EmojiEventsIcon />
@@ -370,10 +378,197 @@ class Main extends React.Component {
     }
 
     analyze() {
-        // use the variables to calculate a trust score for this address
-        // then see what badges they qualify for
-        // call the function that will create something to render for this, or do it in render()
-        
+        /// calculate trust score
+        // variables: transOut/transIn, nftCount, eventCount, friendCount
+        var transOut = this.state.transOut;
+        var transIn = this.state.transIn;
+        var transTotal = transOut + transIn;
+        var nftCount = this.state.nfts;
+        var eventCount = this.state.events;
+        var friendCount = this.state.friends;
+        var trustScore = 0;
+        var trustVal = [];
+
+        trustScore = transOut + nftCount + eventCount + 2 * friendCount;
+        trustScore = trustScore / 5;
+
+        if (trustScore <= 1) {
+            trustVal.push(
+                <div>
+                    <Box display="flex" alignItems="center">
+                        <Box padding={1} sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                        }}>
+                            <Typography variant="h6" sx={{
+                                fontWeight: 'bold'
+                            }}>
+                                Trust Score:
+                            </Typography>
+                            <Typography style={{fontWeight:"bold", color: "red"}}>
+                            Very Low
+                            </Typography>
+                        </Box>
+                    </Box>
+                </div>
+            );
+        } else if (trustScore <= 2) {
+            trustVal.push(
+                <div>
+                    <Box display="flex" alignItems="center">
+                        <Box padding={1} sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                        }}>
+                            <Typography variant="h6" sx={{
+                                fontWeight: 'bold'
+                            }}>
+                                Trust Score:
+                            </Typography> 
+                            <Typography style={{fontWeight:"bold", color: "orange"}}>
+                            Low
+                            </Typography>
+                        </Box>
+                    </Box>
+                </div>
+            );
+        } else if (trustScore <= 4) {
+            trustVal.push(
+                <div>
+                    <Box display="flex" alignItems="center">
+                        <Box padding={1} sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                        }}>
+                            <Typography variant="h6" sx={{
+                                fontWeight: 'bold'
+                            }}>
+                                Trust Score:
+                            </Typography>
+                            <Typography style={{fontWeight:"bold", color:"yellow"}}>
+                            Medium
+                            </Typography>
+                        </Box>
+                    </Box>
+                </div>
+            );
+        } else if (trustScore > 4) {
+            trustVal.push(
+                <div>
+                    <Box display="flex" alignItems="center">
+                        <Box padding={1} sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                        }}>
+                            <Typography variant="h6" sx={{
+                                fontWeight: 'bold'
+                            }}>
+                                Trust Score:
+                            </Typography>
+                            <Typography style={{fontWeight:"bold", color:"green"}}>
+                            High
+                            </Typography>
+                        </Box>
+                    </Box>
+                </div>
+            );
+        }
+
+        /// see what badges this address qualifies for
+        // if they have a lot of transactions, they are a trader
+        // if they have a lot of events, they are a creator
+        // if they have a lot of friends, they are a socialite
+        // if they have a lot of nfts, they are a collector
+        // if they have none, they are a lurker
+        var badges = [];
+        if (transTotal >= 15) {
+            badges.push(
+                <div>
+                    <Box display="flex" alignItems="center">
+                        <Box padding={1} sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                        }}>
+                            <CurrencyExchangeIcon />
+                            <div style={{fontWeight:"bold"}}>
+                            Trader
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
+            );
+        }
+        if (nftCount >= 2) {
+            badges.push(
+                <div>
+                    <Box display="flex" alignItems="center">
+                        <Box padding={1} sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                        }}>
+                            <MuseumIcon />
+                            <div style={{fontWeight:"bold"}}>
+                            Collector
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
+            );
+        }
+        if (eventCount >= 3) {
+            badges.push(
+                <div>
+                    <Box display="flex" alignItems="center">
+                        <Box padding={1} sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                        }}>
+                            <FestivalIcon />
+                            <div style={{fontWeight:"bold"}}>
+                            Attendee
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
+            );
+        }
+        if (friendCount >= 3) {
+            badges.push(
+                <div>
+                    <Box display="flex" alignItems="center">
+                        <Box padding={1} sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                        }}>
+                            <ConnectWithoutContactIcon />
+                            <div style={{fontWeight:"bold"}}>
+                            Socialite
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
+            );
+        }
+        if (badges.length == 0) {
+            badges.push(
+                <div>
+                    <Box display="flex" alignItems="center">
+                        <Box padding={1} sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                        }}>
+                            <QuestionMarkIcon />
+                            <div style={{fontWeight:"bold"}}>
+                            Lurker
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
+            );
+        }   
+
+        this.setState({badges: badges});
+        this.setState({trustVal: trustVal});
     }
 
     setTransactionCount(ins, out) {
@@ -405,10 +600,15 @@ class Main extends React.Component {
     
     handleSubmit(event) {
       // alert('An address was submitted: ' + this.state.value);
-      event.preventDefault();
-      this.getRSS3();
-      this.getKNN3();
-      this.getKNN3Social();
+      if (this.state.value.length == 42) {
+        event.preventDefault();
+        this.getRSS3();
+        this.getKNN3();
+        this.getKNN3Social();
+      } else {
+        this.setState({loading: false});
+        alert('Please enter a valid address');
+      }
     }
     
     render() {
@@ -487,7 +687,9 @@ class Main extends React.Component {
                         Account Analysis
                     </Typography>
                     <br/>
-
+                    {this.state.trustVal}
+                    <br/>
+                    {this.state.badges}
 
                 </Card>
 
@@ -595,7 +797,7 @@ class Main extends React.Component {
             size="small"
             sx={{
                 width: '80vw',
-                maxWidth: 600
+                maxWidth: 700
             }}/>
 
             <LoadingButton
