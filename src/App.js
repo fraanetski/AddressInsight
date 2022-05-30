@@ -56,7 +56,7 @@ function MyApp() {
 
           <Box sx={{
             alignItems: 'center',
-            marginRight: '37.5%',
+            marginRight: '38%',
           }}>
             <br/>
             <a href="/" style={{all: 'unset'}}>

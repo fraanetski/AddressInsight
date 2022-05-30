@@ -59,6 +59,10 @@ class Main extends React.Component {
       this.parseRSS3Transactions = this.parseRSS3Transactions.bind(this);
       this.parseKNN3Social = this.parseKNN3Social.bind(this);
       this.analyze = this.analyze.bind(this);
+      this.setTransactionCount = this.setTransactionCount.bind(this);
+      this.setEventCount = this.setEventCount.bind(this);
+      this.setNFTCount = this.setNFTCount.bind(this);
+      this.setFriendCount = this.setFriendCount.bind(this);
       this.state = {
         loading: false,
         value: '',
@@ -166,8 +170,8 @@ class Main extends React.Component {
                 }
             }
         }
-        this.setState({nfts: nftCount});
         this.setState({other_addresses: other_addresses});
+        this.setNFTCount(nftCount);
     }
 
     parseRSS3Transactions(notes) {
@@ -199,18 +203,13 @@ class Main extends React.Component {
                                     }}>
                                         <DiamondIcon />
                                         <div style={{fontWeight:"bold"}}>
-                                        {Units.convert(amount, 'wei', 'eth')} {token_symbol}
+                                        {Units.convert(amount, 'wei', 'eth').substring(0,6)} {token_symbol}
                                         </div>
-                                        from &nbsp;
-                                        {from} 
-                                        <br/>
                                         to
                                         &nbsp;
                                         {to}
                                         <br/>
-                                        on
-                                        <br/>
-                                        {date}
+                                        on {date.substring(0,10)}
                                     </Box>
                                 </Box>
                             </div>
@@ -229,18 +228,12 @@ class Main extends React.Component {
                                     }}>
                                         <DiamondIcon />
                                         <div style={{fontWeight:"bold"}}>
-                                        {Units.convert(amount, 'wei', 'eth')} {token_symbol}
+                                        {Units.convert(amount, 'wei', 'eth').substring(0,6)} {token_symbol}
                                         </div>
                                         from &nbsp;
                                         {from} 
                                         <br/>
-                                        to
-                                        &nbsp;
-                                        {to}
-                                        <br/>
-                                        on
-                                        <br/>
-                                        {date}
+                                        on {date.substring(0,10)}
                                     </Box>
                                 </Box>
                             </div>
@@ -249,8 +242,8 @@ class Main extends React.Component {
                 }
             }
         }
-        this.setState({transIn: ins, transOut: out, transTotal: ins + out});
         this.setState({transactions: transactions});
+        this.setTransactionCount(ins, out);
     }
 
     async getKNN3() {
@@ -281,8 +274,11 @@ class Main extends React.Component {
         );
 
         const json = await response.json();
-        console.log(json);
-        var events = json.data.addrs[0].attendEvents;
+        if (json.data) {
+            var events = json.data.addrs[0].attendEvents;
+        } else {
+            var events = [];
+        }
         this.parseKNN3(events);
     }
 
@@ -314,7 +310,11 @@ class Main extends React.Component {
         );
 
         const json = await response.json();
-        var social = json.data.addrs[0].addrsFollow;
+        if (json.data) {
+            var social = json.data.addrs[0].addrsFollow;
+        } else {
+            var social = [];
+        }
         console.log(social);
         this.parseKNN3Social(social);
     }
@@ -322,7 +322,6 @@ class Main extends React.Component {
     parseKNN3(events) {
         var events = events;
         var eventNames = [];
-        this.setState({events: events.length});
         for (var i = 0; i < events.length; i++) {
             eventNames.push(
                 <div>
@@ -342,12 +341,12 @@ class Main extends React.Component {
         }
 
         this.setState({eventNames: eventNames});
+        this.setEventCount(events.length);
     }
 
     parseKNN3Social(social) {
         var social = social;
         var socialNames = [];
-        this.setState({friends: social.length});
         for (var i = 0; i < social.length; i++) {
             socialNames.push(
                 <div>
@@ -367,13 +366,33 @@ class Main extends React.Component {
         }
 
         this.setState({socialNames: socialNames});
+        this.setFriendCount(social.length);
     }
 
-    async analyze() {
+    analyze() {
         // use the variables to calculate a trust score for this address
         // then see what badges they qualify for
         // call the function that will create something to render for this, or do it in render()
         
+    }
+
+    setTransactionCount(ins, out) {
+        this.setState({transIn: ins});
+        this.setState({transOut: out});
+        this.setState({transTotal: ins + out});
+    }
+
+    setNFTCount(count) {
+        this.setState({nfts: count});
+    }
+
+    setEventCount(count) {
+        this.setState({events: count});
+    }
+
+    setFriendCount(count) {
+        this.setState({friends: count});
+        this.analyze();
     }
     
     handleClick() {
@@ -386,11 +405,10 @@ class Main extends React.Component {
     
     handleSubmit(event) {
       // alert('An address was submitted: ' + this.state.value);
+      event.preventDefault();
       this.getRSS3();
       this.getKNN3();
       this.getKNN3Social();
-      this.analyze();
-      event.preventDefault();
     }
     
     render() {
@@ -451,7 +469,6 @@ class Main extends React.Component {
                     <br/>
                     <br/>
                     {this.state.value}
-                    <br/>
                     <br/>
                     {/* Balance: {Units.convert(this.state.balance, 'wei', 'eth')} ETH
                     <br/>
@@ -552,19 +569,6 @@ class Main extends React.Component {
                     </Typography>
                     }
                 </Card>
-
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
-                <br/>
                 <br/>
             </div>
             )
