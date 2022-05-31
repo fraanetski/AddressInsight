@@ -2,7 +2,7 @@
 
 [Live App](https://addressinsight.xyz)
 
-[Demo Video](https://youtube.com/netski/)
+[Demo Video](https://youtu.be/s34663pT8oM)
 
 ## Summary
 
