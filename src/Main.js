@@ -7,13 +7,9 @@ import './App.css';
 import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
-import AlternateEmailIcon from '@mui/icons-material/AlternateEmail';
 import DiamondIcon from '@mui/icons-material/Diamond';
-import EggIcon from '@mui/icons-material/Egg';
 import Units from 'ethereumjs-units'
 import FingerprintIcon from '@mui/icons-material/Fingerprint';
-import { styled } from '@mui/material/styles';
-import IconButton from '@mui/material/IconButton';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import SocialDistanceIcon from '@mui/icons-material/SocialDistance';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
@@ -21,17 +17,6 @@ import MuseumIcon from '@mui/icons-material/Museum';
 import FestivalIcon from '@mui/icons-material/Festival';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
-
-const ExpandMore = styled((props) => {
-    const { expand, ...other } = props;
-    return <IconButton {...other} />;
-  })(({ theme, expand }) => ({
-    transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-    marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
-  }));
 
 class Main extends React.Component {
     constructor(props){
@@ -77,7 +62,6 @@ class Main extends React.Component {
     }
 
     async getRSS3() {
-        var address = this.state.value;
         const endpoint = 'https://pregod.rss3.dev/v0.4.0/account:' + this.state.value + '@ethereum/notes?';
         await fetch(endpoint, {
             method: 'GET',
@@ -85,8 +69,7 @@ class Main extends React.Component {
         .then(response => response.json())
         .then(data => {
             console.log(data);
-            if (data.total == 0){
-                console.log("caught it");
+            if (data.total === 0){
                 this.getRSS3();
             } else {
                 this.parseRSS3(data);
@@ -114,8 +97,8 @@ class Main extends React.Component {
             var to = metadata.to;
             var amount = metadata.amount;
             // parse the tags
-            if (tags != undefined) {
-                var tags = note.tags;
+            if (tags !== undefined) {
+                tags = note.tags;
                 var tag_list = [];
                 for (var j = 0; j < tags.length; j++) {
                     var tag = tags[j];
@@ -141,15 +124,12 @@ class Main extends React.Component {
     }
 
     parseRSS3NFTs(notes) {
-        var notes = notes;
         var other_addresses = [];
         var nftCount = 0;
         for (var i = 0; i < notes.length; i++) {
             var note = notes[i];
             var title = note.title;
             var token_symbol = note.token_symbol;
-            var from = note.from;
-            var address = note.address;
             var tag_list = note.tags;
             if(title) {
                 if(tag_list.length < 2){
@@ -180,7 +160,6 @@ class Main extends React.Component {
     }
 
     parseRSS3Transactions(notes) {
-        var notes = notes;
         var address = this.state.value;
         var ins = [];
         var out = [];
@@ -189,13 +168,12 @@ class Main extends React.Component {
             var note = notes[i];
             var title = note.title;
             var token_symbol = note.token_symbol;
-            var url = note.address;
             var date = note.date;
             var from = note.from;
             var to = note.to;
             var amount = note.amount;
-            if (title == undefined) {
-                if (from.toUpperCase() == address.toUpperCase()) {
+            if (title === undefined) {
+                if (from.toUpperCase() === address.toUpperCase()) {
                     out++;
 
                     transactions.push(
@@ -279,10 +257,11 @@ class Main extends React.Component {
         );
 
         const json = await response.json();
+        var events;
         if (json.data.addrs[0]) {
-            var events = json.data.addrs[0].attendEvents;
+            events = json.data.addrs[0].attendEvents;
         } else {
-            var events = [];
+            events = [];
         }
         this.parseKNN3(events);
     }
@@ -315,17 +294,17 @@ class Main extends React.Component {
         );
 
         const json = await response.json();
+        var social;
         if (json.data) {
-            var social = json.data.addrs[0].addrsFollow;
+            social = json.data.addrs[0].addrsFollow;
         } else {
-            var social = [];
+            social = [];
         }
         console.log(social);
         this.parseKNN3Social(social);
     }
 
     parseKNN3(events) {
-        var events = events;
         var eventNames = [];
         for (var i = 0; i < events.length; i++) {
             eventNames.push(
@@ -351,7 +330,6 @@ class Main extends React.Component {
     }
 
     parseKNN3Social(social) {
-        var social = social;
         var socialNames = [];
         for (var i = 0; i < social.length; i++) {
             socialNames.push(
@@ -387,7 +365,7 @@ class Main extends React.Component {
         var trustScore = 0;
         var trustVal = [];
         
-        if (transOut.constructor == Array) transOut = transOut.length;
+        if (transOut.constructor === Array) transOut = transOut.length;
 
         trustScore = transOut + nftCount + eventCount + (2*friendCount);
         trustScore = trustScore / 5;
@@ -455,7 +433,7 @@ class Main extends React.Component {
                 </div>
             );
         } else if (trustScore > 4) {
-            if (nftCount == 0 && eventCount == 0 && friendCount == 0) {
+            if (nftCount === 0 && eventCount === 0 && friendCount === 0) {
                 trustVal.push(
                     <div>
                     <Box display="flex" alignItems="center">
@@ -496,7 +474,7 @@ class Main extends React.Component {
                     </div>
                 );
             }
-        } else if (trustScore == undefined) {
+        } else if (trustScore === undefined) {
             trustVal.push(
                 <div>
                     <Box display="flex" alignItems="center">
@@ -593,7 +571,7 @@ class Main extends React.Component {
                 </div>
             );
         }
-        if (badges.length == 0) {
+        if (badges.length === 0) {
             badges.push(
                 <div>
                     <Box display="flex" alignItems="center">
@@ -645,7 +623,7 @@ class Main extends React.Component {
     handleSubmit(event) {
       // alert('An address was submitted: ' + this.state.value);
       console.log('hello');
-      if (this.state.value.length == 42) {
+      if (this.state.value.length === 42) {
         event.preventDefault();
         this.getRSS3();
         this.getRSS3();
@@ -725,7 +703,7 @@ class Main extends React.Component {
                     padding: 3,
                     margin: 3
                 }}>
-                    <img src={avatar} height='70' />
+                    <img src={avatar} alt="avatar" height='70' />
                     <br/>
                     <br/>
                     {this.state.value}
@@ -826,7 +804,7 @@ class Main extends React.Component {
                     <Typography color="primary" variant="h5" sx={{
                         fontWeight: 'bold'
                     }}>
-                        Transactions
+                        Recent Transactions
                     </Typography>
                     <br/>
                     {(this.state.transactions.length > 0)
