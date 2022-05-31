@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import { useTheme, ThemeProvider, createTheme } from '@mui/material/styles';
 import './App.css';
-import Logo from './addrlogo1.png';
+import Logo from './addrlogo.png';
 import Main  from './Main';
 import IconButton from '@mui/material/IconButton';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -85,11 +85,11 @@ function MyApp() {
             position: 'absolute',
             bottom: 0,
           }}>
-            <a target="_blank" rel="noreferrer" href="https://twitter.com/whateverthisiscalled" style={{all: "unset"}}>
+            <a target="_blank" rel="noreferrer" href="https://twitter.com/addressinsight" style={{all: "unset"}}>
                 <TwitterIcon />
                 &nbsp;
             </a>
-            <a target="_blank" rel="noreferrer" href="https://github.com/fraanetski/ethshanghai" style={{all: "unset"}}>
+            <a target="_blank" rel="noreferrer" href="https://github.com/fraanetski/addressinsight" style={{all: "unset"}}>
                 <GitHubIcon />
             </a>
             <br/>
