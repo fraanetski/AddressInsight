@@ -1,70 +1,50 @@
-# Getting Started with Create React App
+# AddressInsight
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+[Live App](https://addressinsight.xyz)
 
-## Available Scripts
+[Demo Video](https://youtube.com/netski/)
 
-In the project directory, you can run:
+## Summary
 
-### `npm start`
+AddressInsight is a data interface and analysis platform for Ethereum addresses. Blockchain data can be thought of as a 3-layer stack:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+<img width="500" alt="stack" src="https://user-images.githubusercontent.com/50059514/171092696-49af6dbc-79fb-46f0-9c7d-eef41ae6605a.png">
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+AddressInsight builds off RSS3 and KNN3 to make up the Interface Layer and part of the Analysis Layer, thus completing the stack. Of course this is simplifying it to some degree, but it's a useful abstraction with which to think about how AddressInsight interacts with KNN3 and RSS3, and to understand where it fits into the overall efforts made by those technologies.
 
-### `npm test`
+## Motivation
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The two main problems that AddressInsight solves are trust and readability.
 
-### `npm run build`
+### Trust
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Scammers are still a major issue in the Crypto world. Until now there has not been a platform that gives you easy to read analysis on an addresses trustworthiness. To solve this issue AddressInsight calculates a "Trust Score" for each address, based off a number of data point concerning their on-chain activities. This enables anyone to get a quick second opinion on someone they may be interacting with.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Readability
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Existing address/block explorer platforms are meant for people with a technical background who already have a deep understanding of how a blockchain works. This leads to a UI that can be intimidating for people with less of a background in the technical side, and thus gravely hurts web3 onboarding. AddressInsight is designed with simplicity and human-readability as top priorities.
 
-### `npm run eject`
+## Future Directions
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+This application is currently only the MVP (minimum viable product). There are many directions in which it can be taken. 
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Doubling down on analysis and interfacing
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+The most logical place to go from here is to integrate more data and expand on the analysis. We could add in many more types of data from RSS3, KNN3, and possible other sources, and visualize it in more intuitive ways. Then we can add more analysis given this data, to better inform a whole host of activities beyond trust, like marketing for potential drops. 
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Becoming a full social media platform
 
-## Learn More
+The app already has wallet login integrated - it just doesn't do anything yet. Using RSS3, we could turn this into a full social media platform, where you can follow addresses and see their newest activity on a live feed.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Team
+Developer - Netski (fraanetski@protonmail.com)
 
-To learn React, check out the [React documentation](https://reactjs.org/).
 
-### Code Splitting
+## Built With
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+<img width="251" alt="KNN3" src="https://user-images.githubusercontent.com/50059514/171091873-10ff8861-8084-470a-818c-1a50d69266a1.png">
 
-### Analyzing the Bundle Size
+<img width="251" alt="RSS3" src="https://user-images.githubusercontent.com/50059514/171091883-025c8753-2734-4d4e-b06f-6e1bc382c909.png">
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
 
-### Making a Progressive Web App
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
