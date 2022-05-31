@@ -1,8 +1,8 @@
 # AddressInsight
 
-[Live App](addressinsight.xyz)
+[Live App](https://addressinsight.xyz)
 
-[Demo Video](youtube.com/netski/)
+[Demo Video](https://youtube.com/netski/)
 
 ## Summary
 
