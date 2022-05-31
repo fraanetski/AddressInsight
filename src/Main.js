@@ -17,6 +17,7 @@ import MuseumIcon from '@mui/icons-material/Museum';
 import FestivalIcon from '@mui/icons-material/Festival';
 import ConnectWithoutContactIcon from '@mui/icons-material/ConnectWithoutContact';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
+import GrainIcon from '@mui/icons-material/Grain';
 
 class Main extends React.Component {
     constructor(props){
@@ -503,7 +504,7 @@ class Main extends React.Component {
         // if they have a lot of nfts, they are a collector
         // if they have none, they are a lurker
         var badges = [];
-        if (transTotal >= 15) {
+        if (transTotal >= 15 && transIn >= 5) {
             badges.push(
                 <div>
                     <Box display="flex" alignItems="center">
@@ -514,6 +515,23 @@ class Main extends React.Component {
                             <CurrencyExchangeIcon />
                             <div style={{fontWeight:"bold"}}>
                             Trader
+                            </div>
+                        </Box>
+                    </Box>
+                </div>
+            );
+        }
+        if (transOut >= 10) {
+            badges.push(
+                <div>
+                    <Box display="flex" alignItems="center">
+                        <Box padding={1} sx={{
+                            width: '100%',
+                            alignItems: 'center',
+                        }}>
+                            <GrainIcon />
+                            <div style={{fontWeight:"bold"}}>
+                            Web3 User
                             </div>
                         </Box>
                     </Box>
