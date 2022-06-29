@@ -9,7 +9,9 @@
 ## Contact info
 
 Person of contact: Netski
+
 Discord ID: netski#0685
+
 Unstoppable Domains registered account email address: fraanetski@protonmail.com
 
 ## Summary
