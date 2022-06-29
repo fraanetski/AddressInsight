@@ -2,7 +2,15 @@
 
 [Live App](https://addressinsight.xyz)
 
-[Demo Video](https://youtu.be/s34663pT8oM)
+[Unstoppable Domains Integration Demo Video](
+
+[General Demo Video](https://youtu.be/s34663pT8oM)
+
+## Contact info
+
+Person of contact: Netski
+Discord ID: netski#0685
+Unstoppable Domains registered account email address: fraanetski@protonmail.com
 
 ## Summary
 
