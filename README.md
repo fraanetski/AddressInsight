@@ -2,7 +2,7 @@
 
 [Live App](https://addressinsight.xyz)
 
-[Unstoppable Domains Integration Demo Video](
+[Unstoppable Domains Integration Demo Video](https://youtu.be/vrQf5KGZBr0)
 
 [General Demo Video](https://youtu.be/s34663pT8oM)
 
