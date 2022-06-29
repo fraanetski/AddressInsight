@@ -51,6 +51,7 @@ Developer - Netski (fraanetski@protonmail.com)
 
 
 ## Built With
+<img width="251" alt="KNN3" src="https://user-images.githubusercontent.com/50059514/176552233-eff86155-3e44-45d3-9487-9343d50e06de.png">
 
 <img width="251" alt="KNN3" src="https://user-images.githubusercontent.com/50059514/171091873-10ff8861-8084-470a-818c-1a50d69266a1.png">
 
