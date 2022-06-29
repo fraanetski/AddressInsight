@@ -2,13 +2,13 @@
 
 [Live App](https://addressinsight.xyz)
 
-[Demo Video](https://youtube.com/netski/)
+[Demo Video](https://youtu.be/s34663pT8oM)
 
 ## Summary
 
 AddressInsight is a data interface and analysis platform for Ethereum addresses. Blockchain data can be thought of as a 3-layer stack:
 
-<img width="500" alt="stack" src="https://user-images.githubusercontent.com/50059514/171092696-49af6dbc-79fb-46f0-9c7d-eef41ae6605a.png">
+<img width="500" alt="stack" src="https://user-images.githubusercontent.com/50059514/171098211-f523c44f-4877-4bc6-b9a3-574bde5627c0.png">
 
 AddressInsight builds off RSS3 and KNN3 to make up the Interface Layer and part of the Analysis Layer, thus completing the stack. Of course this is simplifying it to some degree, but it's a useful abstraction with which to think about how AddressInsight interacts with KNN3 and RSS3, and to understand where it fits into the overall efforts made by those technologies.
 
@@ -45,6 +45,4 @@ Developer - Netski (fraanetski@protonmail.com)
 <img width="251" alt="KNN3" src="https://user-images.githubusercontent.com/50059514/171091873-10ff8861-8084-470a-818c-1a50d69266a1.png">
 
 <img width="251" alt="RSS3" src="https://user-images.githubusercontent.com/50059514/171091883-025c8753-2734-4d4e-b06f-6e1bc382c909.png">
-
-
 
