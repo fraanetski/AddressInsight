@@ -14,13 +14,43 @@ import TwitterIcon from '@mui/icons-material/Twitter';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import {useEthers} from "@usedapp/core";
+import UAuth from '@uauth/js';
 
 const ColorModeContext = React.createContext({ toggleColorMode: () => {} });
+
+const uauth = new UAuth(
+  {
+    clientID: '5e4cda8a-7a9a-4633-aa61-7e0c4d04c13f',
+    redirectUri: 'https://addressinsight.xyz/',
+    scope: 'openid wallet email:optional',
+  })
 
 function MyApp() {
   const theme = useTheme();
   const colorMode = React.useContext(ColorModeContext);
-  const {activateBrowserWallet} = useEthers()
+  var unse = window.localStorage.username
+  if (unse) {
+    var user = JSON.parse(unse)
+    var uns = user.value
+  }
+
+  const doLogin = async () => {
+    try {
+        const authorization = await uauth.loginWithPopup();
+
+        console.log(authorization);
+        window.location.reload()
+    } catch (error) {
+        console.error(error);
+    }
+  }
+
+  function logout() {
+    window.localStorage.removeItem('username')
+    window.location.reload()
+
+  }
+
 
   return (
     <Box
@@ -35,52 +65,74 @@ function MyApp() {
             display: 'flex',
         }}>
           <IconButton sx={{ 
-            marginLeft: 0,
+            marginLeft: 5,
             marginRight: 'auto',
-            ml: 5,
             }} onClick={colorMode.toggleColorMode} color="inherit">
             {theme.palette.mode === 'dark' ? <LightModeIcon /> : <NightlightRoundIcon />}
           </IconButton>
 
-          <Box sx={{
+
+          <Container sx={{
             alignItems: 'center',
-            marginRight: '35%',
+            // marginRight: '37%',
+            marginRight: 'auto',
+            marginLeft: 2,
+            pt: 1.75,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'center',
+
           }}>
             <br/>
             <a href="/" style={{all: 'unset'}}>
             <img src={Logo} alt="logo" height='50'/>
             </a>
-          </Box>
+          </Container>
 
-          <IconButton sx={{
-            marginLeft: 0,
-            mr: 3,
-          }}>
-            <Button sx={{
-              color: 'text.primary',
-            }}
-            onClick={() => activateBrowserWallet()}>
+
+
+              {uns 
+              ?
+              <Button sx={{
+                color: 'text.primary',
+                marginLeft: 0,
+                marginRight: 3,
+  
+              }}
+              onClick={() => logout()}
+              >
+                {uns}
+                </Button>
+              :
+                            <Button sx={{
+                              color: 'text.primary',
+                              marginLeft: 0,
+                              marginRight: 3,
+                
+                            }}
+                            onClick={() => doLogin()}
+                            >
             <AccountBalanceWalletIcon />
             </Button>
-          </IconButton>
+}
+
           </Box>
 
 
         <Box sx={{
                   display: 'flex',
                   position: 'relative',
-                  width: '100%',
                   height: '100%',
                   alignItems: 'center',
                   justifyContent: 'center',
                   margin: 0,
                   padding: 0,
+                  pb: 1,
         }}>
 
 
         <Main/>
         
-
         <Box sx={{
             position: 'absolute',
             bottom: 0,
